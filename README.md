@@ -1,26 +1,121 @@
 Non-sysadmin issues
 
 1. Are user requests tracked via a ticket system?
+
+	Keeping requests in a database improves sharing within the team. It prevents two people from working on the same issue at the same time. It enables sysadmins to divide work amongst themselves. It enables passing a task from one person to another without losing history. It lets a sysadmin back-fill for one that is out, unavailable or on vacation.
+
 2. Are "the 3 empowering policies" defined and published?
+
+	How does users get help?
+
+		When do they use the ticketing system, and when can they bypass the help desk, and go right to you. (Almost never.)
+
+	What is an emergency?
+		An official definition of an emergency enables a sysadmin to set priorities. Without this everything becomes an emergency and sysadmins become interrupt-driven and ineffective.
+
+	What is supported?
+		An official definition of what is supported enables sysadmins to say "no". It should define when, where, who, and what is supported. Do you provide support after 5pm? On weekends? Do you provide desk-side visits? Home visits? Do you support anyone off the street or just people in your division? What software and hardware are supported? Is there a support life-cycle or once something is supported are you fated to support it forever? Are new technologies supported automatically or only after an official request and an official positive reply?
+
 3. Does the team record monthly metrics?
+
+	You need to be data-driven when you make decisions or sway upper levels of management.
+
 
 Modern Team Practices
 
 4. Do you have a "policy and procedure" wiki?
+
+	Your team needs a wiki. On it you can document all your policies (what should be done) and procedures (how it is done).
+
+	Automation is great but before you can automate something you must be able to do it manually. Documenting the manual process for something is a precondition to automation. In the meantime it enables consistent operations across a team and it gains you the ability to delegate. If it is documented, someone other than you can do it.
+
 5. Do you have a password safe?
+
+	This shows you have a mature way to manage passwords.
+
+	There are many excellent software-based password "vaults" systems. Though an envelope in an actual locked box is often good enough.
+
 6. Is your team's code kept in a source code control system?
+
+	We're all programmers now. Programmers use source code control.
+
+	Things to put in your repository: Your scripts, programs, configuration files, documentation, and just about anything. If you aren't sure, the answer is "yes".
+
 7. Does your team use a bug-tracking system for their own code?
+
+	Bug-tracking systems are different than ticket systems. If you have only occasional bugs (maybe your group doesn't write a lot of code) then filing help tickets for yourself is sufficient.
+
+	However if your team is serious about writing code, start a separate bug-tracking system. Bug-tracking systems have a different workflow than request ticket systems. Ticket systems are a communication tool between you and your users. Bug-tracking systems track the bug lifecycle (report, verify, assign, fix, close, verify).
+
 8. In your bugs/tickets, does stability have a higher priority than new features?
+
+Mature teams prioritize bugs this way:
+
+    security (highest)
+    stability
+    bugs
+    performance
+    new features (lowest)
+
+You have to fix stability before you add new features. Security issues are high priority stability issues.
+
 9. Does your team write "design docs?"
+
+	Good sysadmin teams "think before they do." On a larger team it is important to communicate what you are about to do, or what you have done.
+
+	A design doc is a standardized format for proposing new things or describing current things. It should be short, 1-2 pages, but can be very long when the need arises.
+
+	Create a template and use it all over the place. The section headings might include: Overview, Goals, Non-Goals, Background, Proposed Solution, Alternatives Considered, Security, Disaster Recovery, Cost.
+
 10. Do you have a "post-mortem" process?
+
+	After a failure do you write up what happened so you can learn from it or do you just hope nobody notices and that it will all go away?
+
+	A good post-mortem (PM) includes a timeline of what happened, who was affected, what was done to fix it, how was business affected, and a list of proposed solutions to prevent this problem from happening again. Each proposal should be filed as a bug or ticket so they can be tracked to completion.
+
+	Doing PMs consistently builds a more stable environment. After each outage come up with at least one preventative measure. Can your monitoring system detect the situation so you know about it before users do? Can you detect precursors to the problem? Often systems have a way to run a battery of tests on new configurations before they are adopted ("pre-submit scripts" in source code repositories, for example). Are there tests you can add that will detect the typo that created the outage?
+
+	A post-mortem is not about blaming and shaming. In a good sysadmin culture you are comfortable with putting your name in the "what went wrong" section.
 
 Operational Practices
 
 11. Does each service have an OpsDoc?
+
+Each service should have certain things documented. If each service documents them the same way, people get used to it and can find what they need easier. I make a sub-wiki (or a mini-web site, or a Google Sites "Site") for each service:
+
+Each of these has the same 7 tabs: (some may be blank)
+
+    Overview: Overview of the service: what is it, why do we have it, who are the primary contacts, how to report bugs, links to design docs and other relevant information.
+    Build: How to build the software that makes the service. Where to download it from, where the source code repository is, steps for building and making a package or other distribution mechanisms. If it is software that you modify in any way (open source project you contribute to or a local project) include instructions for how a new developer gets started. Ideally the end result is a package that can be copied to other machines for installation.
+    Deploy: How to deploy the software. How to build a server from scratch: RAM/disk requirements, OS version and configuration, what packages to install, and so on. If this is automated with a configuration management tool like cfengine/puppet/chef (and it should be), then say so.
+    Common Tasks: Step-by-step instructions for common things like provisioning (add/change/delete), common problems and their solutions, and so on.
+    Pager Playbook: A list of every alert your monitoring system may generate for this service and a step-by-step "what do to when..." for each of them.
+    DR: Disaster Recovery Plans and procedure. If a service machine died how would you fail-over to the hot/cold spare?
+    SLA: Service Level Agreement. The (social or real) contract you make with your customers. Typically things like Uptime Goal (how many 9s), RPO (Recovery Point Objective) and RTO (Recovery Time Objective).
+
+If this is something being developed in-house, the 8th tab would be information for the team: how to set up a development environment, how to do integration testing, how to do release engineering, and other tips that developers will need. For example one project I'm on has a page that describes the exact steps for adding a new RPC to the system.
+
 12. Does each service have appropriate monitoring?
+
+	The monitoring should be based on the SLA from the OpsDoc. If you don't have an SLA, simple "up/down" alerting is the minimum.
+
 13. Do you have a pager rotation schedule?
+
+	An on-call rotation schedule documents who is "carrying the pager" (or responsible for alerts and emergencies) at which times.
+
+	You might literally "pass the pager", handing it to the next person periodically, or everyone might have their own pager and your monitoring system consults a schedule to determine who to page. It is best to have a generic email address that goes to the current person so that customers don't need to know the schedule.
+
+	A rotation schedule can be simple or complex. 1 week out of n (for a team of n people) makes sense if there are few alerts. For more complex situations splitting the day into three 8-hour shifts makes sense.
+
 14. Do you have separate development, QA, and production systems?
+
+	The QA system need not be as expensive as their live counterpart. They don't have to be as powerful as the live system, they can have less RAM and disk and CPU horsepower. They can be virtual machines sharing one big physical machine.
+
+	Obviously if scaling and response time are important it is more likely you'll need a QA system that more closely resembles the live system.
+
 15. Do roll-outs to many machines have a "canary process?"
+
+        Upgrade 1 machine, then 1% of all machines, then 1 machine per second until all machines are done.  This procedure can be done manually but if you use a configuration management system, the ability to do canaries should be "baked in" to the system.
 
 Automation Practices
 
@@ -163,3 +258,5 @@ Security Practices
 32. Can you change all privileged (root) passwords in 1 hour?
 
 	Create a checklist of everywhere it must be changed on a wiki page. Change the password globally by following the list, adding to it as you remember other devices. For obscure systems, document the exact command or process to change the password.
+
+(Adapted from Ops Report Card.)
